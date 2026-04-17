@@ -1,0 +1,31 @@
+import { notFound } from "next/navigation";
+import { getPublicPropertyById } from "@/lib/public-data";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { PropertyTimeline } from "@/components/features/property-timeline";
+
+export default async function InvestorPropertyDetailPage({ params }: { params: { id: string } }) {
+  const property = await getPublicPropertyById(params.id);
+  if (!property) notFound();
+
+  return (
+    <div className="space-y-6">
+      <div className="glass-card p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">{property.title}</h1>
+          <Badge>{property.status}</Badge>
+        </div>
+        <p className="mt-3 text-slate-300">{property.description}</p>
+        <div className="mt-4 grid gap-2 text-sm text-slate-200 md:grid-cols-3">
+          <p>Location: {property.location}</p>
+          <p>Area: {property.area} sqft</p>
+          <p>Total Cost: PKR {property.totalCost.toLocaleString()}</p>
+        </div>
+      </div>
+      <Card>
+        <h2 className="mb-3 text-lg font-semibold text-white">Property Timeline</h2>
+        <PropertyTimeline currentStage={property.constructionStage} timeline={property.timeline} />
+      </Card>
+    </div>
+  );
+}
