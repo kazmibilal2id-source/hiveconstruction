@@ -3,6 +3,8 @@ import { getPublicPropertyById } from "@/lib/public-data";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { PropertyTimeline } from "@/components/features/property-timeline";
+import { getImageUrl } from "@/lib/utils";
+import { InvestButton } from "@/components/features/invest-button";
 
 export default async function InvestorPropertyDetailPage({ params }: { params: { id: string } }) {
   const property = await getPublicPropertyById(params.id);
@@ -10,6 +12,16 @@ export default async function InvestorPropertyDetailPage({ params }: { params: {
 
   return (
     <div className="space-y-6">
+      {property.images?.[0] && (
+        <div className="h-[300px] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={getImageUrl(property.images[0])}
+            alt={property.title}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
       <div className="glass-card p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-white">{property.title}</h1>
@@ -19,7 +31,10 @@ export default async function InvestorPropertyDetailPage({ params }: { params: {
         <div className="mt-4 grid gap-2 text-sm text-slate-200 md:grid-cols-3">
           <p>Location: {property.location}</p>
           <p>Area: {property.area} sqft</p>
-          <p>Total Cost: PKR {property.totalCost.toLocaleString()}</p>
+          <p>Total Cost: PKR {(property.totalCost || 0).toLocaleString()}</p>
+        </div>
+        <div className="mt-6 border-t border-white/10 pt-6">
+          <InvestButton propertyId={property._id} />
         </div>
       </div>
       <Card>

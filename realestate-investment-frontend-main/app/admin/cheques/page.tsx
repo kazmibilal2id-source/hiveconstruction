@@ -34,7 +34,7 @@ export default function AdminChequesPage() {
           <Card key={cheque._id}>
             <p className="font-semibold text-white">{cheque.chequeNumber}</p>
             <p className="text-sm text-slate-300">{cheque.bankName}</p>
-            <p className="text-sm text-slate-300">Amount: PKR {cheque.amount.toLocaleString()}</p>
+            <p className="text-sm text-slate-300">Amount: PKR {(cheque.amount || 0).toLocaleString()}</p>
             <p className="text-xs text-slate-400">
               {cheque.status} • {new Date(cheque.issueDate).toLocaleDateString()}
             </p>

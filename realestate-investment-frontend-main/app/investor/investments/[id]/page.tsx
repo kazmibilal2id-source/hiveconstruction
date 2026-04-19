@@ -35,8 +35,8 @@ export default function InvestorInvestmentDetailPage() {
         <h1 className="text-2xl font-bold text-white">Investment Detail</h1>
         <div className="mt-4 grid gap-2 text-sm text-slate-200 md:grid-cols-2">
           <p>Property: {property.title}</p>
-          <p>Amount: PKR {investment.amount.toLocaleString()}</p>
-          <p>Share %: {investment.sharePercentage.toFixed(2)}%</p>
+          <p>Amount: PKR {(investment.amount || 0).toLocaleString()}</p>
+          <p>Share %: {(investment.sharePercentage || 0).toFixed(2)}%</p>
           <p>Status: {investment.status}</p>
         </div>
       </Card>
@@ -44,11 +44,11 @@ export default function InvestorInvestmentDetailPage() {
       <Card>
         <h2 className="mb-3 text-lg font-semibold text-white">Smart Exit Plan Simulator</h2>
         <ExitPlanSimulator
-          investmentAmount={investment.amount}
+          investmentAmount={investment.amount || 0}
           investmentDate={investment.investmentDate}
-          propertyTotalCost={property.totalCost}
-          hypotheticalSalePrice={property.salePrice || property.totalCost * 1.2}
-          currentMarketValue={property.salePrice || property.totalCost * 1.15}
+          propertyTotalCost={property.totalCost || 0}
+          hypotheticalSalePrice={property.salePrice || (property.totalCost || 0) * 1.2}
+          currentMarketValue={property.salePrice || (property.totalCost || 0) * 1.15}
           sold={property.status === "sold"}
           soldDate={property.soldDate}
         />

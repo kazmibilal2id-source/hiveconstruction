@@ -97,7 +97,7 @@ export default function AdminInvestmentDetailPage() {
         <div className="mt-4 grid gap-2 text-sm text-slate-200 md:grid-cols-2">
           <p>Investor: {investor.fullName}</p>
           <p>Property: {property.title}</p>
-          <p>Amount: PKR {investment.amount.toLocaleString()}</p>
+          <p>Amount: PKR {(investment.amount || 0).toLocaleString()}</p>
           <p>Status: {investment.status}</p>
         </div>
       </Card>
@@ -120,7 +120,7 @@ export default function AdminInvestmentDetailPage() {
         <div className="mt-3 space-y-2 text-sm text-slate-200">
           {relatedCheques.map((item) => (
             <div key={item._id} className="rounded-lg border border-white/10 bg-white/5 p-2">
-              {item.chequeNumber} - {item.bankName} - PKR {item.amount} - {item.status}
+               {item.chequeNumber} - {item.bankName} - PKR {(item.amount || 0).toLocaleString()} - {item.status}
             </div>
           ))}
         </div>

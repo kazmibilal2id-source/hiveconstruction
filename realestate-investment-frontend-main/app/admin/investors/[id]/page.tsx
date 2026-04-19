@@ -49,7 +49,7 @@ export default function InvestorDetailPage() {
         <div className="space-y-2">
           {investments.map((item) => (
             <div key={item._id} className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm text-slate-200">
-              Investment {item._id} — PKR {item.amount.toLocaleString()} — {item.status}
+              Investment {item._id} — PKR {(item.amount || 0).toLocaleString()} — {item.status}
               <div className="mt-1">
                 <Link href={`/admin/investments/${item._id}`} className="text-brand-gold">
                   Manage investment →

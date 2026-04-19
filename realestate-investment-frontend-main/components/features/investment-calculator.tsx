@@ -18,7 +18,7 @@ export function InvestmentCalculator({ properties }: { properties: Property[] })
   }, [amount, expectedSaleMultiplier]);
 
   const sharePercentage = useMemo(() => {
-    const totalAvailable = qualified.reduce((sum, property) => sum + property.totalCost, 0) || 1;
+    const totalAvailable = qualified.reduce((sum, property) => sum + (property.totalCost || 0), 0) || 1;
     return (amount / totalAvailable) * 100;
   }, [amount, qualified]);
 

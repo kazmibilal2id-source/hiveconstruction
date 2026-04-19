@@ -28,6 +28,9 @@ const register = asyncHandler(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
   const user = await User.create({
     fullName,
     email: email.toLowerCase(),
@@ -35,6 +38,8 @@ const register = asyncHandler(async (req, res) => {
     phone,
     CNIC,
     address,
+    otp,
+    otpExpires,
     role: role || "investor",
     status: "pending"
   });
@@ -44,9 +49,9 @@ const register = asyncHandler(async (req, res) => {
   try {
     await sendEmail({
       to: user.email,
-      subject: "Registration Received - Hive Construction Ventures",
-      html: `<p>Hi ${user.fullName},</p><p>Your registration is pending admin approval. We'll notify you once approved.</p>`,
-      text: `Hi ${user.fullName}, your registration is pending admin approval.`
+      subject: "Verify your email - Hive Construction Ventures",
+      html: `<p>Hi ${user.fullName},</p><p>Your verification code is: <strong>${otp}</strong></p><p>This code expires in 10 minutes.</p>`,
+      text: `Hi ${user.fullName}, your verification code is: ${otp}`
     });
   } catch (error) {
     if (error instanceof ExternalServiceError) {
@@ -217,10 +222,32 @@ const resetPassword = asyncHandler(async (req, res) => {
   return sendSuccess(res, null, "Password reset successful");
 });
 
+const verifyOtp = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+
+  const user = await User.findOne({
+    email: email.toLowerCase(),
+    otp,
+    otpExpires: { $gt: new Date() }
+  });
+
+  if (!user) {
+    throw new AuthenticationError("Invalid or expired OTP");
+  }
+
+  user.otp = undefined;
+  user.otpExpires = undefined;
+  user.status = "active"; // Auto-activate on successful OTP verification
+  await user.save();
+
+  return sendSuccess(res, null, "Email verified successfully. You can now login.");
+});
+
 module.exports = {
   register,
   login,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyOtp
 };

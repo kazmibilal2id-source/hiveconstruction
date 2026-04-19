@@ -37,7 +37,7 @@ export default function AdminInvestmentsPage() {
                 <div>
                   <p className="font-semibold text-white">{property?.title || "Property"}</p>
                   <p className="text-sm text-slate-300">Investor: {investor?.fullName || investor?._id}</p>
-                  <p className="text-sm text-slate-300">Amount: PKR {investment.amount.toLocaleString()}</p>
+                  <p className="text-sm text-slate-300">Amount: PKR {(investment.amount || 0).toLocaleString()}</p>
                 </div>
                 <Link href={`/admin/investments/${investment._id}`} className="text-sm text-brand-gold">
                   Manage detail →

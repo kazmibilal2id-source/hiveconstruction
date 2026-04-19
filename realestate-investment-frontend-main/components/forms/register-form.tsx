@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   fullName: z.string().min(3),
@@ -25,6 +26,7 @@ const backendApi =
   "https://realestate-investment-backend.vercel.app/api";
 
 export function RegisterForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -57,8 +59,9 @@ export function RegisterForm() {
       }
 
       reset();
-      const successMessage = payload?.meta?.message || "Registration successful. Await admin approval.";
+      const successMessage = payload?.meta?.message || "Verify your email to continue.";
       toast.success(successMessage);
+      router.push(`/verify?email=${encodeURIComponent(values.email)}`);
     } catch {
       toast.error("Unable to connect to server. Please try again.");
     }

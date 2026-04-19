@@ -87,7 +87,7 @@ export default function InvestorWithdrawalPage() {
           >
             {investments.map((investment) => (
               <option key={investment._id} value={investment._id}>
-                {investment._id} — PKR {investment.amount.toLocaleString()}
+                {investment._id} — PKR {(investment.amount || 0).toLocaleString()}
               </option>
             ))}
           </select>
@@ -117,7 +117,7 @@ export default function InvestorWithdrawalPage() {
             <p className="text-sm text-white">{item.reason}</p>
             <p className="text-xs text-slate-400">Requested: {new Date(item.requestDate).toLocaleDateString()}</p>
             <p className="text-xs text-slate-300">Status: {item.status}</p>
-            <p className="text-xs text-slate-300">Calculated Return: PKR {item.calculatedReturn.toFixed(2)}</p>
+            <p className="text-xs text-slate-300">Calculated Return: PKR {(item.calculatedReturn || 0).toFixed(2)}</p>
           </div>
         ))}
         {!history.length && <p className="text-sm text-slate-400">No withdrawal requests yet.</p>}

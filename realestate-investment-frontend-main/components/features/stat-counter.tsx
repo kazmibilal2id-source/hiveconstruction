@@ -19,12 +19,13 @@ export function StatCounter({
     let start = 0;
     const duration = 800;
     const stepTime = 16;
-    const increment = value / (duration / stepTime);
+    const safeValue = value || 0;
+    const increment = safeValue / (duration / stepTime);
 
     const timer = setInterval(() => {
       start += increment;
-      if (start >= value) {
-        setCount(value);
+      if (start >= safeValue) {
+        setCount(safeValue);
         clearInterval(timer);
       } else {
         setCount(Math.floor(start));

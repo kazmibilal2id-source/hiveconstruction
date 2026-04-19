@@ -36,8 +36,8 @@ export default function InvestorInvestmentsPage() {
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-base font-semibold text-white">{property?.title || "Property"}</p>
-                  <p className="text-sm text-slate-300">Amount: PKR {investment.amount.toLocaleString()}</p>
-                  <p className="text-sm text-slate-300">Profit: PKR {investment.profitReceived.toLocaleString()}</p>
+                  <p className="text-sm text-slate-300">Amount: PKR {(investment.amount || 0).toLocaleString()}</p>
+                  <p className="text-sm text-slate-300">Profit: PKR {(investment.profitReceived || 0).toLocaleString()}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge>{investment.status}</Badge>

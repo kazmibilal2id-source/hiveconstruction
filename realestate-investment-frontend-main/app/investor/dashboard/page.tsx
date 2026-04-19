@@ -43,12 +43,12 @@ export default function InvestorDashboardPage() {
   }, [data?.accessToken]);
 
   const totalInvested = useMemo(
-    () => investments.reduce((sum, investment) => sum + investment.amount, 0),
+    () => investments.reduce((sum, investment) => sum + (investment.amount || 0), 0),
     [investments]
   );
 
   const totalProfit = useMemo(
-    () => investments.reduce((sum, investment) => sum + investment.profitReceived, 0),
+    () => investments.reduce((sum, investment) => sum + (investment.profitReceived || 0), 0),
     [investments]
   );
 

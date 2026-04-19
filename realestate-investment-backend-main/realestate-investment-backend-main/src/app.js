@@ -21,6 +21,7 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const stripeRoutes = require("./routes/stripeRoutes");
 
 const app = express();
 
@@ -31,7 +32,14 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json({ limit: "2mb" }));
+app.use(
+  express.json({
+    limit: "2mb",
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    }
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(mongoSanitize());
@@ -62,6 +70,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/stripe", stripeRoutes);
 
 app.use((_req, _res, next) => {
   next(new NotFoundError("Route not found"));

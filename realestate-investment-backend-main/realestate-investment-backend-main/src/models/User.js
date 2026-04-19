@@ -19,6 +19,8 @@ const userSchema = new mongoose.Schema(
       default: "pending"
     },
     profileImage: { type: String },
+    otp: { type: String },
+    otpExpires: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date }
   },

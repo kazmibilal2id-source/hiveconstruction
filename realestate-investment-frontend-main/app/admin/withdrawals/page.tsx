@@ -52,7 +52,7 @@ export default function AdminWithdrawalsPage() {
           <Card key={item._id}>
             <p className="text-sm text-white">{item.reason}</p>
             <p className="text-xs text-slate-400">{new Date(item.requestDate).toLocaleString()}</p>
-            <p className="text-xs text-slate-300">Return: PKR {item.calculatedReturn.toFixed(2)}</p>
+            <p className="text-xs text-slate-300">Return: PKR {(item.calculatedReturn || 0).toFixed(2)}</p>
             <p className="text-xs text-slate-300">Status: {item.status}</p>
             {item.status === "pending" && (
               <div className="mt-2 flex gap-2">

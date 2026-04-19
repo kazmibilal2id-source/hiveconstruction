@@ -66,11 +66,11 @@ export function ExitPlanSimulator(props: SimulatorProps) {
       <div className="grid gap-3 md:grid-cols-2">
         <Card>
           <p className="text-sm text-slate-400">Hold / Rule-based return</p>
-          <p className="mt-2 text-xl font-bold text-white">PKR {result.hold.toLocaleString()}</p>
+          <p className="mt-2 text-xl font-bold text-white">PKR {(result.hold || 0).toLocaleString()}</p>
         </Card>
         <Card>
           <p className="text-sm text-slate-400">Early Withdraw</p>
-          <p className="mt-2 text-xl font-bold text-white">PKR {result.earlyWithdrawal.toLocaleString()}</p>
+          <p className="mt-2 text-xl font-bold text-white">PKR {(result.earlyWithdrawal || 0).toLocaleString()}</p>
         </Card>
       </div>
 
@@ -87,11 +87,11 @@ export function ExitPlanSimulator(props: SimulatorProps) {
             <tbody>
               <tr className="border-t border-white/10 text-slate-100">
                 <td className="py-2">Hold to rule-based payout</td>
-                <td className="py-2">PKR {result.hold.toLocaleString()}</td>
+                <td className="py-2">PKR {(result.hold || 0).toLocaleString()}</td>
               </tr>
               <tr className="border-t border-white/10 text-slate-100">
                 <td className="py-2">Withdraw now (early)</td>
-                <td className="py-2">PKR {result.earlyWithdrawal.toLocaleString()}</td>
+                <td className="py-2">PKR {(result.earlyWithdrawal || 0).toLocaleString()}</td>
               </tr>
             </tbody>
           </table>
