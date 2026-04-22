@@ -40,7 +40,7 @@ class AppError extends Error {
       return err;
     }
 
-    return new InternalError("Unexpected internal server error", {
+    return new InternalError(`Unexpected internal server error: ${err?.message || "Unknown error"}`, {
       metadata: {
         originalMessage: err?.message || "Unknown error"
       }
