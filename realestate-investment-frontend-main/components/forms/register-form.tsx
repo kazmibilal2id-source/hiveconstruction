@@ -23,7 +23,7 @@ type RegisterValues = z.infer<typeof schema>;
 const backendApi =
   process.env.NEXT_PUBLIC_BACKEND_API_URL ||
   process.env.BACKEND_API_URL ||
-  "https://realestate-investment-backend.vercel.app/api";
+  "https://hiveconstruction.onrender.com/api";
 
 export function RegisterForm() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 export const API_BASE =
   process.env.NEXT_PUBLIC_BACKEND_API_URL ||
   process.env.BACKEND_API_URL ||
-  "https://realestate-investment-backend.vercel.app/api";
+  "https://hiveconstruction.onrender.com/api";
 
 interface ApiEnvelope<T> {
   success: boolean;

@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 const backendApi =
   process.env.BACKEND_API_URL ||
   process.env.NEXT_PUBLIC_BACKEND_API_URL ||
-  "https://realestate-investment-backend-main.vercel.app/api";
+  "https://hiveconstruction.onrender.com/api";
 
 type BackendAuthResponse = {
   success: boolean;
