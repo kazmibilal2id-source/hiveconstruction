@@ -11,20 +11,27 @@ const { sendEmail } = require("../utils/email");
 
 const requestWithdrawal = asyncHandler(async (req, res) => {
   const { investmentId, reason, currentMarketValue } = req.body;
+  console.log("Withdrawal Request Received:", { investmentId, userId: req.user.id });
 
   const investment = await Investment.findById(investmentId);
   if (!investment) {
+    console.error("Investment not found:", investmentId);
     throw new NotFoundError("Investment not found");
   }
 
+  console.log("Investment Found:", { investorId: investment.investorId.toString(), userId: req.user.id });
   if (investment.investorId.toString() !== req.user.id) {
+    console.error("IDOR Protection Triggered: Investment owner mismatch");
     throw new AuthorizationError("IDOR protection: investment does not belong to current user");
   }
 
   const property = await Property.findById(investment.propertyId);
   if (!property) {
+    console.error("Property not found for investment:", investment.propertyId);
     throw new NotFoundError("Property not found for this investment");
   }
+
+  console.log("Property Found:", property.title);
 
   const allInvestments = await Investment.find({
     propertyId: property._id,
@@ -40,6 +47,8 @@ const requestWithdrawal = asyncHandler(async (req, res) => {
     totalInvestedByAllInvestors
   );
 
+  console.log("Calculated Return:", calculatedReturn);
+
   const request = await WithdrawalRequest.create({
     investorId: req.user.id,
     investmentId,
@@ -47,19 +56,28 @@ const requestWithdrawal = asyncHandler(async (req, res) => {
     calculatedReturn
   });
 
-  const admins = await User.find({ role: "admin", status: "active" }).select("_id");
-  if (admins.length) {
-    await Notification.insertMany(
-      admins.map((admin) => ({
-        recipientId: admin._id,
-        message: `New withdrawal request submitted for investment ${investmentId}`,
-        type: "withdrawal_request"
-      }))
-    );
+  console.log("Withdrawal Request Created:", request._id);
+
+  try {
+    const admins = await User.find({ role: "admin", status: "active" }).select("_id");
+    if (admins.length) {
+      await Notification.insertMany(
+        admins.map((admin) => ({
+          recipientId: admin._id,
+          message: `New withdrawal request submitted for investment ${investmentId}`,
+          type: "withdrawal_request"
+        }))
+      );
+      console.log("Admin notifications sent");
+    }
+  } catch (notifError) {
+    console.error("Failed to send admin notifications:", notifError);
+    // Don't fail the whole request just because notifications failed
   }
 
   return sendSuccess(res, request, "Withdrawal request submitted", 201);
 });
+
 
 const getWithdrawals = asyncHandler(async (req, res) => {
   const query = req.user.role === "admin" ? {} : { investorId: req.user.id };
