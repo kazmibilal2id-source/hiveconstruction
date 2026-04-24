@@ -68,12 +68,21 @@ const handleWebhook = asyncHandler(async (req, res) => {
   const sig = req.headers["stripe-signature"];
   let event;
 
+  const webhookSecret = env.stripe.webhookSecret || process.env.STRIPE_WEBHOOK_SECRET;
+
   try {
+    if (!sig || !webhookSecret) {
+      console.error("Missing stripe-signature or webhook secret");
+      return res.status(400).send("Webhook Error: Missing signature or secret");
+    }
     // Requires raw request body
-    event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
   } catch (err) {
+    console.error(`Webhook Signature Verification Failed: ${err.message}`);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
+
+  console.log(`Received Stripe Event: ${event.type}`);
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
@@ -81,32 +90,53 @@ const handleWebhook = asyncHandler(async (req, res) => {
     // Extract metadata defined during checkout session creation
     const { userId, propertyId, amount } = session.metadata;
 
-    const property = await Property.findById(propertyId);
-    
-    if (property && userId && amount) {
-      const numericAmount = Number(amount);
-      const sharePercentage = (numericAmount / property.totalCost) * 100;
+    console.log("Processing Successful Checkout Session:", { userId, propertyId, amount });
 
-      // Create new investment record
-      await Investment.create({
-        investorId: userId,
-        propertyId: propertyId,
-        amount: numericAmount,
-        sharePercentage: sharePercentage,
-        status: "active"
-      });
+    try {
+      const property = await Property.findById(propertyId);
       
-      // Update property amount collected if such field exists
-      if (typeof property.amountCollected !== "undefined") {
-         property.amountCollected += numericAmount;
-         await property.save();
+      if (!property) {
+        console.error(`Property not found for ID: ${propertyId}`);
+        return res.status(404).json({ error: "Property not found" });
       }
+
+      if (userId && amount) {
+        const numericAmount = Number(amount);
+        const sharePercentage = (numericAmount / property.totalCost) * 100;
+
+        console.log("Creating Investment Record...");
+        // Create new investment record
+        const investment = await Investment.create({
+          investorId: userId,
+          propertyId: propertyId,
+          amount: numericAmount,
+          sharePercentage: sharePercentage,
+          status: "active"
+        });
+        
+        console.log(`Investment Created Successfully: ${investment._id}`);
+
+        // Update property amount collected if such field exists
+        if (typeof property.amountCollected !== "undefined") {
+           property.amountCollected += numericAmount;
+           await property.save();
+           console.log("Property amountCollected updated");
+        }
+      } else {
+        console.error("Missing userId or amount in session metadata");
+      }
+    } catch (dbError) {
+      console.error("Database Error during Webhook processing:", dbError);
+      // We don't throw here to avoid Stripe retrying indefinitely if it's a code/data issue, 
+      // but in production you might want to return 500 if it's a temporary DB issue.
+      return res.status(500).json({ error: "Database processing failed" });
     }
   }
 
   // Return a 200 response to acknowledge receipt of the event
   res.json({ received: true });
 });
+
 
 module.exports = {
   createCheckoutSession,
