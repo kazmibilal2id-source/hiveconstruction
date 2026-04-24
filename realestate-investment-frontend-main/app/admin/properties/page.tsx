@@ -7,6 +7,8 @@ import { apiRequest, API_BASE } from "@/lib/api";
 import { Property } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Copy } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 export default function AdminPropertiesPage() {
   const { data } = useSession();
@@ -16,6 +18,11 @@ export default function AdminPropertiesPage() {
     if (!data?.accessToken) return;
     const rows = await apiRequest<Property[]>("/properties", {}, data.accessToken);
     setProperties(rows);
+  };
+
+  const copyId = (id: string) => {
+    void navigator.clipboard.writeText(id);
+    toast.success("Property ID copied to clipboard!");
   };
 
   useEffect(() => {
@@ -54,6 +61,18 @@ export default function AdminPropertiesPage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-base font-semibold text-white">{property.title}</p>
+                <div className="flex items-center gap-2 group mb-1">
+                  <span className="text-[10px] font-mono text-slate-500 bg-slate-900/50 px-1.5 py-0.5 rounded border border-slate-800/50">
+                    ID: {property._id}
+                  </span>
+                  <button
+                    onClick={() => copyId(property._id)}
+                    className="text-slate-500 hover:text-blue-400 transition-colors"
+                    title="Copy ID"
+                  >
+                    <Copy size={12} />
+                  </button>
+                </div>
                 <p className="text-sm text-slate-300">{property.location}</p>
                 <p className="text-xs text-slate-400">Status: {property.status}</p>
               </div>
