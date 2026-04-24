@@ -39,8 +39,10 @@ export function InvestButton({ propertyId }: { propertyId: string }) {
         body: JSON.stringify({
           propertyId,
           amount: Number(amount),
+          origin: window.location.origin,
         }),
       });
+
 
       const payload = await response.json();
 

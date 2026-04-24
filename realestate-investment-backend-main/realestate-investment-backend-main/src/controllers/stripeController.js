@@ -7,8 +7,11 @@ const Property = require("../models/Property");
 const Investment = require("../models/Investment");
 
 const createCheckoutSession = asyncHandler(async (req, res) => {
-  const { propertyId, amount } = req.body;
+  const { propertyId, amount, origin } = req.body;
   const user = req.user;
+
+  // Use origin from frontend if provided, fallback to config
+  const frontendUrl = origin || env.frontendUrl;
 
   if (!user) {
     throw new AuthenticationError("Unauthorized");
@@ -40,9 +43,10 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `${env.frontendUrl}/investor/dashboard?payment=success`,
-      cancel_url: `${env.frontendUrl}/investor/properties/${propertyId}?payment=cancelled`,
+      success_url: `${frontendUrl}/investor/dashboard?payment=success`,
+      cancel_url: `${frontendUrl}/investor/properties/${propertyId}?payment=cancelled`,
       customer_email: user.email,
+
       client_reference_id: propertyId,
       metadata: {
         userId: user.id,
