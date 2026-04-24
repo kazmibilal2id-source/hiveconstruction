@@ -29,8 +29,13 @@ const env = {
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET
   },
-  masterOtp: process.env.MASTER_OTP || "123456"
+  masterOtp: process.env.MASTER_OTP || "123456",
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET
+  }
 };
+
 
 
 module.exports = env;

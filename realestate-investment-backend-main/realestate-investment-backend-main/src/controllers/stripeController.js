@@ -1,5 +1,5 @@
-const stripeSecret = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder";
-const stripe = require("stripe")(stripeSecret);
+const env = require("../config/env");
+const stripe = require("stripe")(env.stripe.secretKey || "sk_test_placeholder");
 const { asyncHandler } = require("../utils/asyncHandler");
 const { sendSuccess } = require("../utils/response");
 const { AuthenticationError, NotFoundError } = require("../utils/errors");
@@ -23,35 +23,42 @@ const createCheckoutSession = asyncHandler(async (req, res) => {
     throw new NotFoundError("Property not found");
   }
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "pkr",
-          product_data: {
-            name: `Investment in ${property.title}`,
-            description: `Investment amount for property ID: ${propertyId}`,
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "pkr",
+            product_data: {
+              name: `Investment in ${property.title}`,
+              description: `Investment amount for property ID: ${propertyId}`,
+            },
+            unit_amount: Math.round(amount * 100), // Stripe expects amounts in cents/paise
           },
-          unit_amount: Math.round(amount * 100), // Stripe expects amounts in cents/paise
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      mode: "payment",
+      success_url: `${env.frontendUrl}/investor/dashboard?payment=success`,
+      cancel_url: `${env.frontendUrl}/investor/properties/${propertyId}?payment=cancelled`,
+      customer_email: user.email,
+      client_reference_id: propertyId,
+      metadata: {
+        userId: user.id,
+        propertyId: propertyId,
+        amount: amount.toString(),
       },
-    ],
-    mode: "payment",
-    success_url: `${process.env.FRONTEND_URL}/investor/dashboard?payment=success`,
-    cancel_url: `${process.env.FRONTEND_URL}/investor/properties/${propertyId}?payment=cancelled`,
-    customer_email: user.email,
-    client_reference_id: propertyId,
-    metadata: {
-      userId: user._id.toString(),
-      propertyId: propertyId,
-      amount: amount.toString(),
-    },
-  });
 
-  return sendSuccess(res, { id: session.id, url: session.url }, "Stripe session created");
+    });
+
+    return sendSuccess(res, { id: session.id, url: session.url }, "Stripe session created");
+  } catch (error) {
+    console.error("Stripe Session Creation Error:", error);
+    throw error; // This will be caught by asyncHandler and return 500 with message
+  }
 });
+
 
 const handleWebhook = asyncHandler(async (req, res) => {
   const sig = req.headers["stripe-signature"];
