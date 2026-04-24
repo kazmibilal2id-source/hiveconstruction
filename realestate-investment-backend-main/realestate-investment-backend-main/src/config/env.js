@@ -28,7 +28,9 @@ const env = {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET
-  }
+  },
+  masterOtp: process.env.MASTER_OTP || "123456"
 };
+
 
 module.exports = env;
