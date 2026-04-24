@@ -8,8 +8,8 @@ const env = {
   mongodbUri: process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hive_advisor",
   jwtSecret: process.env.JWT_SECRET || "replace_with_backend_jwt_secret",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "1d",
-  corsOrigin: process.env.CORS_ORIGIN || "http://localhost:3000",
-  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  corsOrigin: process.env.CORS_ORIGIN || "https://hive-delta-nine.vercel.app",
+  frontendUrl: process.env.FRONTEND_URL || "https://hive-delta-nine.vercel.app",
   admin: {
     email: process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.toLowerCase() : "",
     password: process.env.ADMIN_PASSWORD || ""
