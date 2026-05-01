@@ -5,6 +5,7 @@ const investorNav = [
   { href: "/investor/dashboard", label: "Dashboard" },
   { href: "/investor/properties", label: "Properties" },
   { href: "/investor/investments", label: "Investments" },
+  { href: "/investor/cheques", label: "Security Cheques" },
   { href: "/investor/withdrawal", label: "Withdrawals" },
   { href: "/investor/notifications", label: "Notifications" },
   { href: "/investor/profile", label: "Profile" }

@@ -14,13 +14,32 @@ const getCheques = asyncHandler(async (req, res) => {
 
   const cheques = await SecurityCheque.find(query)
     .populate("investorId", "fullName email")
-    .populate("investmentId", "amount propertyId")
+    .populate({
+      path: "investmentId",
+      select: "amount propertyId",
+      populate: { path: "propertyId", select: "title" }
+    })
     .sort({ createdAt: -1 });
 
   return sendSuccess(res, cheques, "Cheques fetched");
 });
 
 const createCheque = asyncHandler(async (req, res) => {
+  const { investorId, investmentId } = req.body;
+
+  if (req.user.role !== "admin") {
+    // Ensure the investorId in the body matches the logged-in user
+    if (investorId !== req.user.id) {
+      throw new AuthorizationError("You can only create cheques for yourself");
+    }
+
+    // Ensure the investment belongs to the logged-in user
+    const investment = await Investment.findOne({ _id: investmentId, investorId: req.user.id });
+    if (!investment) {
+      throw new NotFoundError("Investment not found or does not belong to you");
+    }
+  }
+
   const cheque = await SecurityCheque.create({
     ...req.body,
     issueDate: new Date(req.body.issueDate)

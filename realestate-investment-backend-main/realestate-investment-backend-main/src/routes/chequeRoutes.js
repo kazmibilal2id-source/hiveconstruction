@@ -7,7 +7,7 @@ const { chequeSchema, chequeUpdateSchema } = require("../validators/chequeValida
 const router = express.Router();
 
 router.get("/", authenticate, getCheques);
-router.post("/", authenticate, authorizeRoles("admin"), validate(chequeSchema), createCheque);
+router.post("/", authenticate, authorizeRoles("admin", "investor"), validate(chequeSchema), createCheque);
 router.put("/:id", authenticate, authorizeRoles("admin"), validate(chequeUpdateSchema), updateCheque);
 
 module.exports = router;
